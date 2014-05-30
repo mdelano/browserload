@@ -7,7 +7,7 @@
 // Import dependencies
 var casper = require('casper').create({
     verbose: true,
-    logLevel: 'debug'
+    logLevel: 'info'
 });
 
 var utils  = require('utils');
@@ -17,16 +17,15 @@ var galleryAssets = require('../modules/mediasilo/quicklink-gallery-assets');
 
 // Capture CLI args
 var targetUrl = casper.cli.get('targetUrl')
+var resourceLoadThreshold = casper.cli.get('resourceLoadThreshold') == null ? 1000 : casper.cli.get('resourceLoadThreshold')
 
 var assets = [];
 
 casper.start(targetUrl, function() {
     casper.viewport(1600, 700);
     casper.wait(5000, function() {
-        this.echo("Loaded QL gallery page");
         var FPfilename = '/home/mike/browserautomation/fp.png';
-        this.captureSelector(FPfilename, 'body');
-        this.echo('snapshot taken');
+        //this.captureSelector(FPfilename, 'body');
     });
 });
 
@@ -38,10 +37,14 @@ casper.then(function() {
 casper.run(function() {
     var result = {
         'pageTimer' : pageTimer.getLoadTime(),
-        'resourceTimer' : resourceTimer.getLoadTimes() ,
+        'resourceTimer' : resourceTimer.getSlowLoadTimes(resourceLoadThreshold) ,
         'assets' : assets
     }
-    utils.dump(result);
-    this.exit();
 
+    var arrayLength = result.resourceTimer.length;
+    for (var i = 0; i < arrayLength; i++) {
+        casper.log('The resource at ' + result.resourceTimer[i].url + ' was too slow: ' + result.resourceTimer[i].time, 'warning');
+    }
+    //utils.dump(result);
+    this.exit();
 });

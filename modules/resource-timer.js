@@ -48,3 +48,17 @@ casper.on('resource.received', function(resource) {
 exports.getLoadTimes = function() {
     return resourcesTime;
 };
+
+exports.getSlowLoadTimes = function(threshHold) {
+	var slowResourceTimes = [];
+
+	var arrayLength = resourcesTime.length;
+	slowResourceTimesCurrentIndex = 0;
+	for (var i = 0; i < arrayLength; i++) {
+		if(resourcesTime[i] && resourcesTime[i].time > threshHold) {
+			slowResourceTimes[slowResourceTimesCurrentIndex] = resourcesTime[i];
+			slowResourceTimesCurrentIndex++;
+		}
+}
+    return slowResourceTimes;
+};
