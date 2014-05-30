@@ -1,28 +1,24 @@
-var assets = [];
+/**
+    This script loads the quick link gallery page and records 
+    the load times of the page itself as well as it's resources
+**/
 
+
+// Import dependencies
 var casper = require('casper').create({
     verbose: true,
     logLevel: 'debug'
 });
+
 var utils  = require('utils');
-var resource_timer = require('resource_timer');
+var resourceTimer = require('../modules/resource-timer');
+var pageTimer = require('../modules/page-timer');
+var galleryAssets = require('../modules/mediasilo/quicklink-gallery-assets');
+
+// Capture CLI args
 var targetUrl = casper.cli.get('targetUrl')
 
-casper.on('load.started', function(err) {
-    casper.log("started");
-});
-
-casper.on('load.started', function(err) {
-    casper.log("finished");
-});
-
-
-function getAssets() {
-    var assets = document.querySelectorAll('.ttWrapper');
-    return Array.prototype.map.call(assets, function(e) {
-        return e.getAttribute('data-original-title');
-    });
-}
+var assets = [];
 
 casper.start(targetUrl, function() {
     casper.viewport(1600, 700);
@@ -36,13 +32,16 @@ casper.start(targetUrl, function() {
 
 casper.then(function() {
     // aggregate results for the gallery assets
-    assets = this.evaluate(getAssets);
+    assets = this.evaluate(galleryAssets.getAssets);
 });
 
 casper.run(function() {
-    utils.dump(resource_timer.getLoadTimes());
-    // echo results in some pretty fashion
-    this.echo(assets.length + ' assets found:');
-    this.echo(' - ' + assets.join('\n - ')).exit();
+    var result = {
+        'pageTimer' : pageTimer.getLoadTime(),
+        'resourceTimer' : resourceTimer.getLoadTimes() ,
+        'assets' : assets
+    }
+    utils.dump(result);
+    this.exit();
 
 });
