@@ -1,7 +1,20 @@
+/****************************************
+	Thanks to https://gist.github.com/oloynet/4740069
+
+	This module is responsible for capturing load times 
+	for any resource requested a page
+*****************************************/
+
 var require = patchRequire(require);
 
+// We'll use this as a register for all 
+// of our resource load times
 var resourcesTime = [];
 
+/**
+	Event handler for any time a page resource is requested 
+	(js, XHR, images, etc...)
+**/
 casper.on('resource.requested', function(resource) {
     var date_start = new Date();
  
@@ -17,6 +30,9 @@ casper.on('resource.requested', function(resource) {
     }
 });
  
+/**
+	Event handler for any time a resource has been returned
+**/
 casper.on('resource.received', function(resource) {
     var date_end = new Date();
  
