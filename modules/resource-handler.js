@@ -42,6 +42,7 @@ casper.on('resource.received', function(resource) {
     /* to debug and compare */
     resourcesTime[resource.id]['id_received']  = resource.id;
     resourcesTime[resource.id]['url_received'] = resource.url;
+    resourcesTime[resource.id]['status'] = resource.status;
  
 });
 
@@ -59,6 +60,11 @@ exports.getSlowLoadTimes = function(threshHold) {
 			slowResourceTimes[slowResourceTimesCurrentIndex] = resourcesTime[i];
 			slowResourceTimesCurrentIndex++;
 		}
-}
+
+		else if(resourcesTime[i] && resourcesTime[i].time == -1) {
+			slowResourceTimes[slowResourceTimesCurrentIndex] = resourcesTime[i];
+			slowResourceTimesCurrentIndex++;
+		}
+	}
     return slowResourceTimes;
 };

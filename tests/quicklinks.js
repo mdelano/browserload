@@ -11,7 +11,7 @@ var casper = require('casper').create({
 });
 
 var utils  = require('utils');
-var resourceTimer = require('../modules/resource-timer');
+var resourceTimer = require('../modules/resource-handler');
 var pageTimer = require('../modules/page-timer');
 var galleryAssets = require('../modules/mediasilo/quicklink-gallery-assets');
 
@@ -41,10 +41,15 @@ casper.run(function() {
         'assets' : assets
     }
 
-    var arrayLength = result.resourceTimer.length;
-    for (var i = 0; i < arrayLength; i++) {
-        casper.log('The resource at ' + result.resourceTimer[i].url + ' was too slow: ' + result.resourceTimer[i].time, 'warning');
+    // Log any slow load times
+    var slowResourceTimerLength = result.resourceTimer.length;
+    for (var i = 0; i < slowResourceTimerLength; i++) {
+        var logLevel = 'warning';
+        if(!result.resourceTimer[i].status || result.resourceTimer[i].status >= 400) {
+            logLevel = 'error';  
+        }
+        casper.log('The resource at ' + result.resourceTimer[i].url + ' was too slow: ' + result.resourceTimer[i].time + 'ms. Returned ' + result.resourceTimer[i].status, logLevel);
     }
-    //utils.dump(result);
+
     this.exit();
 });
