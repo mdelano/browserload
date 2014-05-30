@@ -7,7 +7,7 @@
 // Import dependencies
 var casper = require('casper').create({
     verbose: true,
-    logLevel: 'info'
+    logLevel: 'warning'
 });
 
 var utils  = require('utils');
