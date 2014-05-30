@@ -58,7 +58,7 @@ casper.run(function() {
     }
 
     if(takeScreenshot && screenshotPath) {
-        this.capture(screenshotPath + '/' + runId + '.png', {
+        this.capture(screenshotPath, {
             top: 0,
             left: 0,
             width: viewportWidth,
