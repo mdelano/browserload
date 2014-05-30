@@ -11,7 +11,7 @@ var casper = require('casper').create({
 });
 
 var utils  = require('utils');
-var resourceTimer = require('../modules/resource-timer');
+var resourceTimer = require('../modules/resource-handler');
 var pageTimer = require('../modules/page-timer');
 var galleryAssets = require('../modules/mediasilo/quicklink-gallery-assets');
 
@@ -44,20 +44,12 @@ casper.run(function() {
     // Log any slow load times
     var slowResourceTimerLength = result.resourceTimer.length;
     for (var i = 0; i < slowResourceTimerLength; i++) {
-        casper.log('The resource at ' + result.resourceTimer[i].url + ' was too slow: ' + result.resourceTimer[i].time, 'warning');
+        var logLevel = 'warning';
+        if(!result.resourceTimer[i].status || result.resourceTimer[i].status >= 400) {
+            logLevel = 'error';  
+        }
+        casper.log('The resource at ' + result.resourceTimer[i].url + ' was too slow: ' + result.resourceTimer[i].time + 'ms. Returned ' + result.resourceTimer[i].status, logLevel);
     }
 
-    // Send all resource load times off to ES
-    var esUrl = "http://paas:8989bf8d62d1e3450c219a5761dee65e@dwalin-us-east-1.searchly.com/load-test-results"
-    var loadTimes = resourceTimer.getLoadTimes(resourceLoadThreshold)
-    var resourceTimerLength = result.resourceTimer.length;
-    casper.log('snood', 'warning');
-    for (var i = 0; i < resourceTimerLength; i++) {
-        casper.log('hi', 'warning');
-        var esResult = JSON.parse(__utils__.sendAJAX(esUrl, 'POST', loadTimes[i], false));
-        utils.dump(esResult);
-    }
-
-    //utils.dump(result);
     this.exit();
 });
