@@ -1,1 +1,2 @@
 worker: ./looper
+stress: ./looper
