@@ -1,1 +1,1 @@
-worker: ./loop.bash
+worker: ./looper

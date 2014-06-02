@@ -7,10 +7,10 @@ while true; do
 
     # upload the screenshot to S3 if it exists
     if [ -e $screenshot ]; then
-        echo "[info] [loop.bash $runId] finished in $((`date +%s%3N` - now)) ms; screenshot to S3 /$S3_BUCKET/$screenshot"
+        echo "[info] [looper $runId] finished in $((`date +%s%3N` - now)) ms; screenshot to S3 /$S3_BUCKET/$screenshot"
         echo -n $AWS_SECRET_KEY > AWS_SECRET_KEY
         lib/s3-bash/s3-put -k $AWS_ACCESS_KEY -s AWS_SECRET_KEY -T $screenshot /$S3_BUCKET/$screenshot
     else
-        echo "[info] [loop.bash $runId] finished in $((`date +%s%3N` - now)) ms"
+        echo "[info] [looper $runId] finished in $((`date +%s%3N` - now)) ms"
     fi
 done
